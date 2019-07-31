@@ -24,7 +24,7 @@ def post_slack(options):
     try:
         channel = os.environ['POST_CHANNEL']
     except KeyError:
-        channel = 'bot_test'
+        channel = 'random'
 
     try:
         icon_emoji = os.environ['ICON_EMOJI']
