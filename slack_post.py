@@ -2,16 +2,19 @@
 from slacker import Slacker
 from crawler import TvCrawler
 import os
+from optparse import OptionParser
+from datetime import datetime
 
 
-def make_message(programs):
-    message = ''
-    for title in programs:
-        message += '<' + programs[title]['href'] + '|' + title + '>' + '\n'
+def make_message(word, date, programs):
+    message = datetime.strptime(date, '%Y%m%d').strftime('%Y/%m/%d') + '   ' + word + '\n'
+    for title, v in programs.items():
+        message += v['time'] + '   ' + v['genre1'] + ' - ' + v['genre2'] + '\n'
+        message += '       <' + v['href'] + '|' + title + '>' + '\n'
     return message
 
 
-def main():
+def post_slack(options):
     try:
         slack_token = os.environ['SLACK_TOKEN']
     except KeyError:
@@ -29,11 +32,15 @@ def main():
 
     slack = Slacker(slack_token)
     tv_crawler = TvCrawler()
-    tv_crawler.get_programs('フランス', '20190801')
+    tv_crawler.get_programs(options.word, options.date)
 
-    message = make_message(tv_crawler.programs)
+    message = make_message(options.word, options.date, tv_crawler.programs)
     slack.chat.post_message(channel, message, icon_emoji=icon_emoji)
 
 
 if __name__ == '__main__':
-    main()
+    parser = OptionParser()
+    parser.add_option('-w', '--word', dest='word', type='string')
+    parser.add_option('-d', '--date', dest='date', type='string')
+    (options, args) = parser.parse_args()
+    post_slack(options)

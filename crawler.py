@@ -24,8 +24,14 @@ class TvCrawler:
             if word not in title and word not in content:
                 continue
             href = program.xpath('div[2]/p[1]/a/@href')[0]
+            time = program.xpath('div[1]/p[2]/em')[0].text
+            genre1 = program.xpath('div[2]/p[2]/span/a[1]')[0].text
+            genre2 = program.xpath('div[2]/p[2]/span/a[2]')[0].text
             self.programs[title] = {
-                'href': self.endpoint + href
+                'href': self.endpoint + href,
+                'time': time,
+                'genre1': genre1,
+                'genre2': genre2
             }
 
 
