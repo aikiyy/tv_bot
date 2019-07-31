@@ -11,6 +11,7 @@ def make_message(word, date, programs):
     for title, v in programs.items():
         message += v['time'] + '   ' + v['genre1'] + ' - ' + v['genre2'] + '\n'
         message += '       <' + v['href'] + '|' + title + '>' + '\n'
+    message += '- - - - - - - - - - - - - - - - - - - - - - - - -'
     return message
 
 
