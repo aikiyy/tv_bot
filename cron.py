@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from crontab import CronTab
-from datetime import date, timedelta
 
 
 class CrontabControl:
@@ -25,14 +24,21 @@ class CrontabControl:
 
 def main():
     words = ['フランス', 'ドイツ']
-    tomorrow = (date.today() + timedelta(days=1)).strftime('%Y%m%d')
+    ex_words = {
+        'フランス': ['フランス語'],
+        'ドイツ': ['ドイツ語']
+    }
     schedule = '0 18 * * *'
     file = 'output.tab'
 
     c = CrontabControl()
 
     for word in words:
-        command = 'python ./slack_post.py' + ' -w ' + word + ' -d ' + tomorrow
+        if word in ex_words:
+            ex_word = ','.join([str(i) for i in ex_words[word]])
+            command = 'python ./slack_post.py' + ' -w ' + word + ' -ex ' + ex_word
+        else:
+            command = 'python ./slack_post.py' + ' -w ' + word
         c.write_job(command, schedule, file)
 
     c.monitor_start(file)

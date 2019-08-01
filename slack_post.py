@@ -3,7 +3,7 @@ from slacker import Slacker
 from crawler import TvCrawler
 import os
 from optparse import OptionParser
-from datetime import datetime
+from datetime import date, datetime, timedelta
 
 
 def make_message(word, date, programs):
@@ -15,7 +15,7 @@ def make_message(word, date, programs):
     return message
 
 
-def post_slack(options):
+def post_slack(options, target_date):
     try:
         slack_token = os.environ['SLACK_TOKEN']
     except KeyError:
@@ -33,15 +33,17 @@ def post_slack(options):
 
     slack = Slacker(slack_token)
     tv_crawler = TvCrawler()
-    tv_crawler.get_programs(options.word, options.date)
+    tv_crawler.get_programs(options.word, target_date, options.exword)
 
-    message = make_message(options.word, options.date, tv_crawler.programs)
+    message = make_message(options.word, target_date, tv_crawler.programs)
     slack.chat.post_message(channel, message, icon_emoji=icon_emoji)
 
 
 if __name__ == '__main__':
     parser = OptionParser()
     parser.add_option('-w', '--word', dest='word', type='string')
-    parser.add_option('-d', '--date', dest='date', type='string')
+    parser.add_option('-ex', '--exword', dest='exword', type='string')
     (options, args) = parser.parse_args()
-    post_slack(options)
+
+    tomorrow = (date.today() + timedelta(days=1)).strftime('%Y%m%d')
+    post_slack(options, tomorrow)

@@ -8,7 +8,7 @@ class TvCrawler:
         self.endpoint = 'https://tv.yahoo.co.jp'
         self.programs = {}
 
-    def get_programs(self, word, date):
+    def get_programs(self, word, date, exwords=None):
         params = {
             'q': word,
             'd': date
@@ -23,6 +23,14 @@ class TvCrawler:
             content = program.xpath('div[2]/p[3]')[0].text
             if word not in title and word not in content:
                 continue
+
+            _f = False
+            for exword in exwords.split(','):
+                if exword in title or exword in content:
+                    _f = True
+            if _f:
+                continue
+
             href = program.xpath('div[2]/p[1]/a/@href')[0]
             time = program.xpath('div[1]/p[2]/em')[0].text
             genre1 = program.xpath('div[2]/p[2]/span/a[1]')[0].text
@@ -36,9 +44,8 @@ class TvCrawler:
 
 
 def main():
-    target_date = '20190730'
     tv_crawler = TvCrawler()
-    tv_crawler.get_programs('フランス', target_date)
+    tv_crawler.get_programs('フランス', '20190730', 'フランス語')
     print(tv_crawler.programs)
 
 
