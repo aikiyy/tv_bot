@@ -35,6 +35,9 @@ def post_slack(options, target_date):
     tv_crawler = TvCrawler()
     tv_crawler.get_programs(options.word, target_date, options.exword)
 
+    if len(tv_crawler.programs) == 0:
+        exit()
+
     message = make_message(options.word, target_date, tv_crawler.programs)
     slack.chat.post_message(channel, message, icon_emoji=icon_emoji)
 
